@@ -1,0 +1,14 @@
+num = 3
+expected = "III"
+
+num = 58
+expected = "LVIII"
+
+num = 1994
+expected = "MCMXCIV"
+
+num = 4
+expected = "IV"
+
+num = 9
+expected = "IX"

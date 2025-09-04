@@ -1,0 +1,20 @@
+s = "()"
+expected = True
+
+s = "()[]{}"
+expected = True
+
+s = "(]"
+expected = False
+
+s = "([)]"
+expected = False
+
+s = "{[]}"
+expected = True
+
+s = "((((("
+expected = False
+
+s = ""
+expected = True

@@ -1,0 +1,14 @@
+s = "III"
+expected = 3
+
+s = "LVIII"
+expected = 58
+
+s = "MCMXCIV"
+expected = 1994
+
+s = "IX"
+expected = 9
+
+s = "XL"
+expected = 40

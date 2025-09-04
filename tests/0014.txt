@@ -1,0 +1,14 @@
+strs = ["flower","flow","flight"]
+expected = "fl"
+
+strs = ["dog","racecar","car"]
+expected = ""
+
+strs = [""]
+expected = ""
+
+strs = ["a"]
+expected = "a"
+
+strs = ["cir","car"]
+expected = "c"
