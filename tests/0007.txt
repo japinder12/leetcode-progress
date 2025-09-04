@@ -1,0 +1,19 @@
+x = 123
+expected = 321
+
+x = -123
+expected = -321
+
+x = 120
+expected = 21
+
+x = 0
+expected = 0
+
+# Overflow case: 1534236469 -> 0 (outside 32-bit signed range)
+x = 1534236469
+expected = 0
+
+# Negative overflow boundary
+x = -1563847412
+expected = 0
