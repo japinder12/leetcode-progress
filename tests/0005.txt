@@ -1,0 +1,23 @@
+s = "cbbd"
+expected = "bb"
+
+s = "racecar"
+expected = "racecar"
+
+s = "bb"
+expected = "bb"
+
+s = "abba"
+expected = "abba"
+
+s = "a"
+expected = "a"
+
+s = "forgeeksskeegfor"
+expected = "geeksskeeg"
+
+s = "abacdfgdcaba"
+expected = "aba"
+
+s = "aacabdkacaa"
+expected = "aca"
