@@ -224,6 +224,17 @@ def run_case(sol, method_name: str, env: Dict[str, Any], expected, module):
             return a == b
 
         cmp_left = shown_out if shown_out is not out else out
+
+        # Normalize list-of-lists outputs (e.g., anagram groups) by
+        # sorting inner lists and then the outer list.
+        def is_list_of_lists(x):
+            return isinstance(x, list) and (len(x) == 0 or isinstance(x[0], (list, tuple)))
+
+        if is_list_of_lists(cmp_left) and is_list_of_lists(expected):
+            def norm(lst):
+                return sorted([tuple(sorted(inner)) for inner in lst])
+            cmp_left = norm(cmp_left)
+            expected = norm(expected)
         ok = eq(cmp_left, expected)
         if not ok:
             msg = f"Expected {expected}, got {shown_out}"
