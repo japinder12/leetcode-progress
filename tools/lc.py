@@ -166,6 +166,8 @@ def build_args(env: Dict[str, Any], method, module) -> List[Any]:
 def run_case(sol, method_name: str, env: Dict[str, Any], expected, module):
     method = getattr(sol, method_name)
     args = build_args(env, method, module)
+    # Keep references to original env values to detect in-place mutations
+    orig_env = dict(env)
     out = method(*args)
 
     listnode_cls = getattr(module, "ListNode", None)
@@ -183,6 +185,24 @@ def run_case(sol, method_name: str, env: Dict[str, Any], expected, module):
             shown_out = []
         elif hasattr(out, "next") and hasattr(out, "val"):
             shown_out = listnode_to_list(out)
+
+    # Handle in-place problems that return None (e.g., rotate image)
+    # If out is None and an expected value is provided, compare against the mutated input
+    inplace_candidate = None
+    if out is None:
+        # Prefer common parameter names
+        for key in ("matrix", "nums", "arr", "board"):
+            if key in env and isinstance(env[key], list):
+                inplace_candidate = env[key]
+                break
+        # Fallback: first list argument in env
+        if inplace_candidate is None:
+            for key, val in env.items():
+                if isinstance(val, list):
+                    inplace_candidate = val
+                    break
+        if inplace_candidate is not None:
+            shown_out = inplace_candidate
 
     ok = True
     msg = ""
