@@ -1,0 +1,17 @@
+x = 121
+expected = True
+
+x = -121
+expected = False
+
+x = 10
+expected = False
+
+x = 0
+expected = True
+
+x = 12321
+expected = True
+
+x = 1001
+expected = True
