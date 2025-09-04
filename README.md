@@ -1,13 +1,12 @@
 # LeetCode Progress
 
-This repo tracks my LeetCode practice: solutions, notes, and a simple progress log.
+Track my LeetCode practice: solutions and some notes.
 
 ## Structure
 - `problems/` → Code solutions organized by difficulty
   - `easy/`, `medium/`, `hard/`
 - `notes/` → Patterns, approaches, and important takeaways
   - `patterns.md`, `dp.md`, `graphs.md`
-- `progress.csv` → Log of problems solved (single source of truth)
 
 
 ## Conventions
