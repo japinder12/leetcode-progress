@@ -1,0 +1,4 @@
+ops = ["MinStack","push","push","push","getMin","pop","top","getMin"]
+args = [[],[-2],[0],[-3],[],[],[],[]]
+expected = [None,None,None,None,-3,None,0,-2]
+
