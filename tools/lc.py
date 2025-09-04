@@ -6,9 +6,6 @@ Usage:
   # Run by problem id; uses tests/<id>.txt
   python tools/lc.py 0001
 
-  # Or run by explicit path and tests
-  python tools/lc.py problems/easy/0001-two-sum.py -t tests/0001.txt
-
 Test file format (paste into tests/<id>.txt):
   nums = [2,7,11,15]
   target = 9
@@ -56,12 +53,12 @@ def load_solution(path: str):
         raise RuntimeError(f"Cannot import solution from {path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    if not hasattr(module, "Solution"):
-        raise AttributeError("Solution class not found in solution file")
-    return module.Solution(), module
+    # Return Solution instance when available; otherwise None (for design problems)
+    sol = module.Solution() if hasattr(module, "Solution") else None
+    return sol, module
 
 
-def choose_method(sol, forced: str | None) -> str:
+def choose_method(sol, forced: str | None = None) -> str:
     if forced:
         if not hasattr(sol, forced):
             raise AttributeError(f"Solution has no method '{forced}'")
@@ -164,10 +161,32 @@ def build_args(env: Dict[str, Any], method, module) -> List[Any]:
 
 
 def run_case(sol, method_name: str, env: Dict[str, Any], expected, module):
+    # Design problems: ops/args drive class methods (e.g., MinStack)
+    if "ops" in env and "args" in env:
+        ops = env["ops"]
+        args_list = env["args"]
+        if not isinstance(ops, list) or not isinstance(args_list, list) or len(ops) != len(args_list):
+            raise ValueError("ops and args must be lists of equal length")
+        class_name = ops[0]
+        if not hasattr(module, class_name):
+            raise AttributeError(f"Class '{class_name}' not found in solution module")
+        cls = getattr(module, class_name)
+        inst = cls(*args_list[0])
+        outputs = [None]
+        for op, a in zip(ops[1:], args_list[1:]):
+            m = getattr(inst, op)
+            res = m(*a)
+            outputs.append(res if res is not None else None)
+        ok = True
+        msg = ""
+        if expected is not None:
+            ok = outputs == expected
+            if not ok:
+                msg = f"Expected {expected}, got {outputs}"
+        return outputs, ok, msg
+
     method = getattr(sol, method_name)
     args = build_args(env, method, module)
-    # Keep references to original env values to detect in-place mutations
-    orig_env = dict(env)
     out = method(*args)
 
     listnode_cls = getattr(module, "ListNode", None)
@@ -186,23 +205,12 @@ def run_case(sol, method_name: str, env: Dict[str, Any], expected, module):
         elif hasattr(out, "next") and hasattr(out, "val"):
             shown_out = listnode_to_list(out)
 
-    # Handle in-place problems that return None (e.g., rotate image)
-    # If out is None and an expected value is provided, compare against the mutated input
-    inplace_candidate = None
-    if out is None:
-        # Prefer common parameter names
-        for key in ("matrix", "nums", "arr", "board"):
-            if key in env and isinstance(env[key], list):
-                inplace_candidate = env[key]
+    # In-place problems that return None: compare mutated first list arg
+    if out is None and expected is not None:
+        for val in env.values():
+            if isinstance(val, list):
+                shown_out = val
                 break
-        # Fallback: first list argument in env
-        if inplace_candidate is None:
-            for key, val in env.items():
-                if isinstance(val, list):
-                    inplace_candidate = val
-                    break
-        if inplace_candidate is not None:
-            shown_out = inplace_candidate
 
     ok = True
     msg = ""
@@ -242,31 +250,21 @@ def run_case(sol, method_name: str, env: Dict[str, Any], expected, module):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Run LeetCode-style Python Solution locally (easy mode)")
-    ap.add_argument("problem", help="Problem id (e.g., 1 or 0001) or path to solution .py")
-    ap.add_argument("-t", "--tests", help="Path to testcase file (defaults to tests/<id>.txt when id is used)")
-    ap.add_argument("-m", "--method", help="Method name on Solution to invoke")
+    ap = argparse.ArgumentParser(description="Run LeetCode-style Python Solution locally (by id)")
+    ap.add_argument("id", help="Problem id (e.g., 1 or 0001)")
     args = ap.parse_args()
 
-    pid = None
-    if os.path.exists(args.problem) and args.problem.endswith(".py"):
-        solution_path = args.problem
-    elif is_problem_id(args.problem):
-        pid = args.problem.zfill(4)
-        solution_path = find_solution_by_id(pid)
-    else:
-        raise SystemExit("Provide either a valid solution path (.py) or a numeric problem id")
+    if not is_problem_id(args.id):
+        raise SystemExit("Please provide a numeric problem id, e.g., 0001")
 
-    tests_path = args.tests
-    if tests_path is None:
-        if pid is None:
-            raise SystemExit("--tests is required when problem id is not provided")
-        tests_path = default_tests_path(pid)
+    pid = args.id.zfill(4)
+    solution_path = find_solution_by_id(pid)
+    tests_path = default_tests_path(pid)
     if not os.path.exists(tests_path):
         raise FileNotFoundError(f"Testcase file not found: {tests_path}")
 
     sol, module = load_solution(solution_path)
-    method_name = choose_method(sol, args.method)
+    method_name = choose_method(sol) if sol is not None else None
 
     with io.open(tests_path, "r", encoding="utf-8") as f:
         content = f.read()
@@ -275,7 +273,8 @@ def main():
     if not blocks:
         raise SystemExit("No testcases found in file")
 
-    print(f"Running: {os.path.relpath(solution_path)}::{method_name}")
+    label = f"{os.path.relpath(solution_path)}::{method_name}" if method_name else os.path.relpath(solution_path)
+    print(f"Running: {label}")
     print(f"Tests:   {os.path.relpath(tests_path)} | {len(blocks)} case(s)\n")
 
     failures = 0
