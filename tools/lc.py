@@ -178,16 +178,33 @@ def run_case(sol, method_name: str, env: Dict[str, Any], expected, module):
         return res
 
     shown_out = out
-    if listnode_cls is not None and hasattr(out, "next") and hasattr(out, "val"):
-        shown_out = listnode_to_list(out)
+    if listnode_cls is not None:
+        if out is None:
+            shown_out = []
+        elif hasattr(out, "next") and hasattr(out, "val"):
+            shown_out = listnode_to_list(out)
 
     ok = True
     msg = ""
     if expected is not None:
-        if shown_out is out:
-            ok = out == expected
-        else:
-            ok = shown_out == expected
+        # Equality helper with float tolerance and list recursion
+        def eq(a, b):
+            # list/tuple
+            if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
+                if len(a) != len(b):
+                    return False
+                return all(eq(x, y) for x, y in zip(a, b))
+            # numbers (int/float)
+            if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+                # If either is float, compare with tolerance
+                if isinstance(a, float) or isinstance(b, float):
+                    return abs(float(a) - float(b)) <= 1e-9
+                return a == b
+            # fallback
+            return a == b
+
+        cmp_left = shown_out if shown_out is not out else out
+        ok = eq(cmp_left, expected)
         if not ok:
             msg = f"Expected {expected}, got {shown_out}"
     return shown_out, ok, msg
@@ -247,4 +264,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
