@@ -1,0 +1,8 @@
+haystack = "sadbutsad"
+needle = "sad"
+expected = 0
+
+haystack = "leetcode"
+needle = "leeto"
+expected = -1
+
