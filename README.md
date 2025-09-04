@@ -12,7 +12,7 @@ This repo tracks my LeetCode practice: solutions, notes, and a simple progress l
 
 ## Conventions
 - Naming: `problems/<difficulty>/<4-digit-id>-<problem-title>.py` (e.g., `problems/easy/0001-two-sum.py`)
-- Commit per solution: `git commit -m "Add 0001 Two Sum (Easy) - hashmap solution"`
+- Commit per solution: `git commit -m "add 0001 Two Sum (Easy) - hashmap solution"`
 
 ## Run Tests Locally (Python)
 - Create a testcase file: `tests/<id>.txt` (e.g., `tests/0001.txt`). Use Python-style assignments; blank line separates cases. Example:
