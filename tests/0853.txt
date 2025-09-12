@@ -13,3 +13,7 @@ position = [0,2,4]
 speed = [4,2,1]
 expected = 1
 
+target = 10
+position = [6,8]
+speed = [3,2]
+expected = 2
