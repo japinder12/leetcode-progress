@@ -28,8 +28,53 @@ Use this file to summarize common problem‑solving patterns and when to apply t
 - Fast/slow pointers for nth‑from‑end; or two passes; or stack.
 - Recursion works for merge; be mindful of recursion depth.
 
-## Stack (Valid Parentheses)
-- Map closers to openers and verify stack empties at end.
+## Stack
+- When: matching pairs, next greater/smaller, spans/ranges, histogram areas.
+
+- Parentheses (Valid Parentheses): map closers→openers; stack should empty.
+```py
+def is_valid_parens(s: str) -> bool:
+    pairs = {')': '(', ']': '[', '}': '{'}
+    st = []
+    for ch in s:
+        if ch in pairs.values():
+            st.append(ch)
+        elif ch in pairs:
+            if not st or st.pop() != pairs[ch]:
+                return False
+        # ignore other chars if present
+    return not st
+```
+
+- Monotonic Stack (Next Greater Element): keep indices; pop while current breaks monotonicity.
+```py
+def next_greater_indices(nums: list[int]) -> list[int]:
+    n = len(nums)
+    res = [-1] * n  # store index (or nums[i] if value desired)
+    st = []         # indices with decreasing values on stack
+    for i, x in enumerate(nums):
+        while st and nums[st[-1]] < x:
+            j = st.pop()
+            res[j] = i
+        st.append(i)
+    return res
+```
+
+- Largest Rectangle in Histogram: store (start_index, height); extend start when popping.
+```py
+def largest_rectangle_area(heights: list[int]) -> int:
+    st = []  # pairs: (start_index, height), heights increasing in stack
+    best = 0
+    for i, h in enumerate(heights + [0]):  # sentinel 0 to flush stack
+        start = i
+        while st and st[-1][1] > h:
+            idx, hh = st.pop()
+            best = max(best, hh * (i - idx))
+            start = idx
+        st.append((start, h))
+    return best
+```
+Tips: choose increasing/decreasing based on "next greater/smaller"; store indices to compute distances; use a sentinel to flush remaining bars.
 
 ## Backtracking (Generate Parentheses)
 - Build strings with counts of open/close used; only add `)` if `close < open`.
