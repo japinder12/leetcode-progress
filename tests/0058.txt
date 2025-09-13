@@ -1,0 +1,15 @@
+s = "Hello World"
+expected = 5
+
+s = "   fly me   to   the moon  "
+expected = 4
+
+s = "luffy is still joyboy"
+expected = 6
+
+s = "a"
+expected = 1
+
+s = " "
+expected = 0
+
