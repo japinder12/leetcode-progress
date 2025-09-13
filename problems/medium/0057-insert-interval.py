@@ -5,23 +5,23 @@ class Solution(object):
         :type newInterval: List[int]
         :rtype: List[List[int]]
         """
-        res = []
-        i = 0
-        n = len(intervals)
-        s, e = newInterval
-        # add all before
-        while i < n and intervals[i][1] < s:
-            res.append(intervals[i])
-            i += 1
-        # merge overlaps
-        while i < n and intervals[i][0] <= e:
-            s = min(s, intervals[i][0])
-            e = max(e, intervals[i][1])
-            i += 1
-        res.append([s, e])
-        # add rest
-        while i < n:
-            res.append(intervals[i])
-            i += 1
-        return res
+        result = []
+        i, n = 0, len(intervals)
+        new_start, new_end = newInterval
 
+        while i < n and intervals[i][1] < new_start:
+            result.append(intervals[i])
+            i+=1
+        
+        while i < n and intervals[i][0] <= new_end:
+            new_start = min(new_start, intervals[i][0])
+            new_end = max(new_end, intervals[i][1])
+            i+=1
+        result.append([new_start, new_end])
+
+        while i < n:
+            result.append(intervals[i])
+            i+=1
+
+        return result
+    
