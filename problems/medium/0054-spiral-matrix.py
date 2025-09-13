@@ -25,4 +25,3 @@ class Solution(object):
                     res.append(matrix[i][left])
                 left += 1
         return res
-
