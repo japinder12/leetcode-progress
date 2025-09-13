@@ -4,11 +4,13 @@ class Solution(object):
         :type nums: List[int]
         :rtype: bool
         """
-        max_reach = 0
-        for i, jump in enumerate(nums):
-            if i > max_reach:
-                return False
-            if i + jump > max_reach:
-                max_reach = i + jump
-        return True
+        dp = [False for i in range(len(nums))]
+        dp[0] = True
 
+        for i in range(len(nums)):
+            if dp[i]:
+                for j in range(i, i + nums[i] + 1):
+                    if j < len(nums):
+                        dp[j] = True
+
+        return dp[len(nums) - 1]
