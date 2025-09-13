@@ -1,0 +1,14 @@
+s = "successes"
+expected = 6
+
+s = "aeiaeia"
+expected = 3
+
+s = ""
+expected = 0
+
+s = "bbbcccddd"
+expected = 3
+
+s = "AaEeIiOouu!!zz"
+expected = 4
