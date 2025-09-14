@@ -1,0 +1,7 @@
+wordlist = ["KiTe","kite","hare","Hare"]
+queries = ["kite","Kite","KiTe","Hare","HARE","Hear","hear","keti","keet","keto"]
+expected = ["kite","KiTe","KiTe","Hare","hare","","","KiTe","","KiTe"]
+
+wordlist = ["yellow","YellOw","yell","yolo"]
+queries = ["Yellow","yellOw","yelaow","YOLO","yulu"]
+expected = ["yellow","yellow","","yolo","yolo"]
