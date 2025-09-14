@@ -11,10 +11,10 @@ class Solution(object):
         :rtype: Optional[ListNode]
         """
         cur = head
-        while cur and cur.next:
-            if cur.val == cur.next.val:
-                cur.next = cur.next.next
-            else:
-                cur = cur.next
+        while cur:
+            nxt = cur.next
+            while nxt and nxt.val == cur.val:
+                nxt = nxt.next
+            cur.next = nxt
+            cur = nxt
         return head
-
